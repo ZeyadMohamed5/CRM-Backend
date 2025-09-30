@@ -1,0 +1,75 @@
+generator client {
+  provider = "prisma-client-js"
+  
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model User {
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  password String
+  role     Role
+  storeId  String?  
+  store    Store?   @relation(fields: [storeId], references: [id])
+}
+
+
+enum Role {
+  ADMIN
+  USER
+  DESIGNER
+  PRINTER 
+  CUTTER
+  FULLFILLMENT
+}
+
+
+
+
+model Store {
+  id          String    @id @default(cuid())
+  shopDomain  String    @unique
+  name        String   @unique
+  accessToken String    // encrypted blob (base64 JSON or single string)
+
+
+  apiSecret   String?   // encrypted secret used to verify webhooks if provided
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  users       User[] 
+  products    Product[]
+  
+}
+
+model Product {
+  id          String    @id @default(cuid())
+  shopifyId   String
+  storeId     String
+  store       Store     @relation(fields: [storeId], references: [id])
+  title       String
+  productType String?    
+
+  imgUrl     String?
+
+  isPod       Boolean   @default(false)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([shopifyId, storeId])
+  @@index([productType])
+}
+
+model ProductTypeRule {
+  id          String   @id @default(cuid())
+  name        String   @unique   
+  isPod       Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
