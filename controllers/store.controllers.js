@@ -71,7 +71,7 @@ async function listStores(req, res) {
   try {
     const stores = await prisma.store.findMany({
       select: {
-        storeId: true,
+        id: true,
         name: true,
         shopDomain: true,
         createdAt: true,
