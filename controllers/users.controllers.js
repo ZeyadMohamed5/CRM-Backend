@@ -97,7 +97,12 @@ async function loginUser(req, res) {
 
     return res.json({
       message: "Logged in",
-      user: { id: user.id, name: user.name, role: user.role },
+      user: {
+        id: user.id,
+        name: user.name,
+        role: user.role,
+        storeName: user.storeId,
+      },
     });
   } catch (err) {
     console.error(err);
